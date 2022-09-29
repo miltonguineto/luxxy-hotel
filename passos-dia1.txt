@@ -1,0 +1,91 @@
+https://thecloudbootcamp.notion.site/Imers-o-Cloud-na-Pr-tica-Miss-o-1-c202fbafc36f46e7bdba22f845347470
+
+# Passos para implementação do Projeto Hands-on - Parte 1
+
+# Amazon Web Services (AWS)
+
+- Acessar a console da AWS. Na barra de pesquisas, digite IAM. Na seção Services, clique em IAM.
+- Clique em Add user, adicionei o nome **terraform-pt-1** e selecione o tipo programmatic.
+- Após avançar, em **Set permissions**, clique no botão Attach existing policies directly.
+- Selecione **AmazonS3FullAccess**.
+- Clique em **Next: Tags**
+- Clique em **Next: Review**
+- Clique em **Create user**
+- Clique em **Download .csv**
+- Após download ser concluído, renomeie o **.csv** para **accessKeys.csv**
+
+# Google Cloud Platform (GCP) - conta: miltonsgneto@gmail.com | senha padrão M1l....
+
+- **[CLIQUE AQUI para baixar os arquivos do projeto hands-on.](https://objectstorage.us-ashburn-1.oraclecloud.com/p/mE7kdT1O8UppsI0aV6qxwi8Rfm4YAn3A9rIX6Yv1FxE2Rv6mI1W_RrUs2CBYWxAx/n/idqfa2z2mift/b/eventos-thecloudbootcamp/o/ICP2/mission1.zip)**
+- Acessar a console da GCP e abrir o Cloud Shell
+- Fazer o upload dos arquivos accessKeys.csv e mission1.zip para o Cloud Shell
+- Após fazer o upload, executar os comandos de preparação dos arquivos:
+
+```
+mkdir mission1_pt
+mv mission1.zip mission1_pt
+cd mission1_pt
+unzip mission1.zip
+mv ~/accessKeys.csv mission1/pt
+cd mission1/pt
+chmod +x *.sh
+```
+
+- Execute os comandos abaixo para preparar o ambiente da AWS e GCP
+
+```
+./aws_set_credentials.sh accessKeys.csv
+gcloud config set project <your-project-id>
+```
+
+- Clique em Autorize e execute o comando abaixo para setar o projeto no Google Cloud Shell
+
+```
+./gcp_set_project.sh
+```
+
+- Execute o comando para habilitar as APIs do Kubernetes, Container Registry e Cloud SQL
+
+```
+gcloud services enable containerregistry.googleapis.com
+gcloud services enable container.googleapis.com
+gcloud services enable sqladmin.googleapis.com
+```
+
+**OBS IMPORTANTE (NÃO PULE ESTE PASSO):**
+
+- **Antes de executar os comandos do terraform, abra o Google Cloud Editor e atualizar o arquivo tcb_aws_storage.tf substituindo o nome do bucket para um exclusivo (na AWS, os buckets precisam ter nomes únicos).**
+    - Na linha 4 do arquivo tcb_aws_storage.tf:
+        - Abra o Google Cloud Editor
+        - Substituir xxxx pelas iniciais do seu nome mais dois números:
+        Exemplo: luxxy-covid-testing-system-pdf-pt-jr29
+- Execute os seguintes comandos para provisionar os recursos de infraestrutura
+
+```
+cd ~/mission1_pt/mission1/pt/terraform/
+
+terraform init
+terraform plan
+terraform apply
+```
+
+- Após a conclusão do provisionamento da instância do CloudSQL, acesse o serviço do Cloud SQL.
+- Clique na sua instância do Cloud SQL.
+- Na lateral direita, em Primary Instance, clique em **“Connections”.**
+- Em **Instance IP assignment**, habilite o Private IP.
+- Em **Associated Network**, selecione “Default”.
+- Ainda em **“Connections”**, em **Autorized Networks**, clique em "Adicionar Rede (Add Network)".
+    - Em **New Network**, insira as seguintes informações:
+        - **Nome:** Public Access (Apenas para testes)
+        - **Network:** 0.0.0.0/0
+        - Clique em **Done**.
+
+PS: Para ambientes de produção, é recomendado utilizar apenas a Rede Privada para o acesso ao banco de dados. 
+⚠️ Nunca fornecer acesso à rede pública (0.0.0.0/0) para os banco de dados de produção.
+
+- Clique em **Save** e aguarde finalizar a edição do Cloud SQL Instance.
+
+**Chegando até aqui, você concluiu a implementação da primeira parte do Projeto Hands-on e fez a implementação dos recursos
+ em múltiplos provedores de Cloud utilizando o Terrraform! Parabéns! 🚀🎉**
+
+
